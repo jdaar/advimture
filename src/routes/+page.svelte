@@ -3,25 +3,28 @@
 	import { EnManager } from "$lib/GameSystem/EnManager";
 	import { GsManager } from "$lib/GameSystem/GsManager";
 	import { GsWorldMovement } from "$lib/GameSystem/System/GsWorldMovement";
+	import { fromEvent } from "rxjs";
+	import { onMount } from "svelte";
 
-    let enManager = new EnManager();
-    let gsManager = new GsManager();
-    let gsWorldMovement = new GsWorldMovement();
+    onMount(() => {
+        let enManager = new EnManager();
+        let gsManager = new GsManager();
+        let gsWorldMovement = new GsWorldMovement();
 
-    gsManager.registerGameSystem(gsWorldMovement);
+        gsWorldMovement.subscribeObservable(fromEvent(document, "click"))
 
-    let entity = enManager.createEntity();
-    let pos = new EcPositional(entity, {
-        defaultPosition: { x: 0, y: 0 },
-        canMove: true,
-    });
+        gsManager.registerGameSystem(gsWorldMovement);
 
-    gsManager.inyectGsToEc(pos);
+        let entity = enManager.createEntity();
+        let pos = new EcPositional(entity, {
+            default: {
+                position: { x: 0, y: 0 },
+                canMove: true,
+            }
+        });
 
-    pos.position = { x: 0, y: 0 };
-    pos.position = { x: 1, y: 0 };
-    pos.position = { x: 2, y: 0 };
-    pos.position = { x: 3, y: 0 };
+        gsManager.inyectGsToEc(pos);
+    })
 </script>
 
 <h1>Welcome to SvelteKit</h1>
